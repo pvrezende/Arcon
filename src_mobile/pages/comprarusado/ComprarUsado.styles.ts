@@ -1,0 +1,377 @@
+import { Dimensions, StyleSheet } from 'react-native';
+
+
+const { width } = Dimensions.get("window");
+
+// Verificar se é um dispositivo móvel pequeno (iPhone SE, etc)
+const isSmallDevice = width < 375;
+const isMediumDevice = width >= 375 && width < 414;
+const isLargeDevice = width >= 414;
+
+export const styles = StyleSheet.create({
+  containerWrapper: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: isSmallDevice ? 12 : 16,
+    paddingTop: isSmallDevice ? 45 : 50,
+  },
+  botaoVoltar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: isSmallDevice ? 12 : 16,
+    paddingVertical: isSmallDevice ? 6 : 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: 'white',
+  },
+  botaoVoltarTexto: {
+    marginLeft: isSmallDevice ? 6 : 8,
+    color: '#666',
+    fontSize: isSmallDevice ? 13 : 14,
+  },
+  avatarContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#0284c7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  botaoUsuarioTexto: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  tituloContainer: {
+    paddingHorizontal: isSmallDevice ? 12 : 16,
+    paddingVertical: isSmallDevice ? 16 : 24,
+    alignItems: 'center',
+  },
+  titulo: {
+    fontSize: isSmallDevice ? 20 : 38,
+    fontWeight: 'bold',
+    color: '#0284c7',
+    marginBottom: isSmallDevice ? 6 : 8,
+    textAlign: 'center',
+    marginTop: isSmallDevice ? 20 : 30,
+  },
+  subtitulo: {
+    fontSize: isSmallDevice ? 14 : 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: isSmallDevice ? 20 : 24,
+  },
+  produtosGrid: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  produtoCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginBottom: 16,
+    width: isSmallDevice ? '100%' : (isMediumDevice ? '48%' : '49%'), // 1 coluna em telas pequenas, 2 em médias/grandes
+    minHeight: isSmallDevice ? 380 : (isMediumDevice ? 420 : 450),
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  produtoIndisponivel: {
+    opacity: 0.6,
+  },
+  imagemContainer: {
+    position: 'relative',
+  },
+  imagemPlaceholder: {
+    height: isSmallDevice ? 120 : (isMediumDevice ? 130 : 140),
+    backgroundColor: '#f1f5f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  descontoTag: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#ef4444',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  descontoTexto: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  indisponivelOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  indisponivelTexto: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  produtoConteudo: {
+    padding: isSmallDevice ? 10 : 14,
+    flex: 1,
+  },
+  produtoModelo: {
+    fontSize: isSmallDevice ? 13 : 14,
+    fontWeight: '600',
+    color: '#111',
+    marginBottom: isSmallDevice ? 8 : 10,
+    lineHeight: isSmallDevice ? 18 : 20,
+    minHeight: isSmallDevice ? 36 : 42,
+  },
+  badgesContainer: {
+    flexDirection: 'row',
+    marginBottom: isSmallDevice ? 6 : 8,
+    flexWrap: 'wrap',
+  },
+  badge: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: isSmallDevice ? 4 : 6,
+    paddingVertical: isSmallDevice ? 2 : 3,
+    borderRadius: 4,
+    marginRight: isSmallDevice ? 4 : 6,
+    marginBottom: 2,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  badgeTexto: {
+    fontSize: isSmallDevice ? 9 : 10,
+    color: '#64748b',
+  },
+  caracteristicasContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: isSmallDevice ? 8 : 12,
+    minHeight: isSmallDevice ? 32 : 40,
+    paddingVertical: isSmallDevice ? 2 : 4,
+  },
+  caracteristicaBadge: {
+    backgroundColor: '#e2e8f0',
+    paddingHorizontal: isSmallDevice ? 4 : 6,
+    paddingVertical: isSmallDevice ? 2 : 3,
+    borderRadius: 4,
+    marginRight: isSmallDevice ? 3 : 4,
+    marginBottom: isSmallDevice ? 3 : 4,
+    maxWidth: isSmallDevice ? '48%' : '45%',
+  },
+  caracteristicaTexto: {
+    fontSize: isSmallDevice ? 9 : 10,
+    color: '#475569',
+    fontWeight: '500',
+  },
+  lojaContainer: {
+    marginBottom: isSmallDevice ? 8 : 12,
+    paddingTop: isSmallDevice ? 6 : 8,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+  },
+  lojaHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  lojaNome: {
+    fontSize: isSmallDevice ? 11 : 12,
+    fontWeight: '500',
+    color: '#374151',
+    flex: 1,
+  },
+  avaliacaoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avaliacaoTexto: {
+    fontSize: 12,
+    color: '#374151',
+    marginLeft: 2,
+  },
+  avaliacaoCount: {
+    fontSize: 10,
+    color: '#6B7280',
+    marginLeft: 2,
+  },
+  lojaEndereco: {
+    fontSize: 10,
+    color: '#6B7280',
+  },
+  precoContainer: {
+    marginBottom: 12,
+  },
+  precoOriginal: {
+    fontSize: isSmallDevice ? 11 : 12,
+    color: '#9ca3af',
+    textDecorationLine: 'line-through',
+    marginBottom: 2,
+  },
+  precoAtual: {
+    fontSize: isSmallDevice ? 16 : 18,
+    fontWeight: 'bold',
+    color: '#10b981',
+    marginBottom: 4,
+  },
+  freteTexto: {
+    fontSize: isSmallDevice ? 10 : 11,
+    color: '#6b7280',
+  },
+  botoesContainer: {
+    flexDirection: 'row',
+    gap: isSmallDevice ? 6 : 8,
+  },
+  botao: {
+    flex: 1,
+    paddingVertical: isSmallDevice ? 8 : 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    minHeight: isSmallDevice ? 38 : 44,
+    justifyContent: 'center',
+  },
+  botaoDetalhes: {
+    backgroundColor: '#0284c7',
+  },
+  botaoCarrinho: {
+    backgroundColor: '#10b981',
+  },
+  botaoDesabilitado: {
+    backgroundColor: '#9ca3af',
+  },
+
+  botaoTexto: {
+    color: 'white',
+    fontSize: isSmallDevice ? 8 : (isMediumDevice ? 10 : 10),
+    fontWeight: '500',
+  },
+  carrinhoFlutuante: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    backgroundColor: '#10b981',
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  carrinhoContador: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: '#ef4444',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  carrinhoContadorTexto: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  // Estilos para loading e erro
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+  erroContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  erroText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#ef4444',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  botaoTentarNovamente: {
+    backgroundColor: '#1e40af',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  botaoTentarNovamenteText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  vazioContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  vazioText: {
+    marginTop: 16,
+    fontSize: 18,
+    color: '#64748b',
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  vazioSubtext: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
+  },
+  // Botão voltar padrão
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    marginLeft: 16,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  backButtonText: {
+    color: "#0284c7",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 6,
+  },
+});

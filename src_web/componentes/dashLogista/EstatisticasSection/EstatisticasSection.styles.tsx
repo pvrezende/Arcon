@@ -1,0 +1,118 @@
+import { StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#edf5f8ff",
+    borderRadius: 20,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  containerMobile: {
+    paddingHorizontal: 10,
+    paddingVertical: 30,
+  },
+  header: {
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  titulo: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#222',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  subtitulo: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  cardsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  cardsGridMobile: {
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 28,
+    minHeight: 200,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    flex: 1,
+    minWidth: 200,
+    maxWidth: 240,
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  cardMobile: {
+    flex: 1,
+    minWidth: '45%',
+    maxWidth: '48%',
+    marginHorizontal: 0,
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    minHeight: 160,
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardTitulo: {
+    fontSize: 13,
+    color: '#888',
+    fontWeight: '500',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  cardValor: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  variacaoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  variacao: {
+    fontSize: 12,
+    color: '#52C9A2',
+    fontWeight: '600',
+  },
+   title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+});
+
+export default styles;

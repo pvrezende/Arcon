@@ -1,0 +1,39 @@
+from .schemas import (
+    PropostaUpdate,
+    UserProfileUpdate,
+    ChatCreate,
+    ServicoCreate,
+    PropostaCreate,
+    DecisaoClienteCreate,
+    RecusaServicoCreate,
+    AnuncioCreate,
+    PrestadorCreate,
+    ChatResponse,
+    ServicoResponse,
+    UserProfileResponse,
+    PropostaResponse,
+    StandardResponse,
+    ListResponse,
+    ServicoFilter,
+    Pagination
+)
+
+__all__ = [
+    "PropostaUpdate",
+    "UserProfileUpdate", 
+    "ChatCreate",
+    "ServicoCreate",
+    "PropostaCreate",
+    "DecisaoClienteCreate",
+    "RecusaServicoCreate",
+    "AnuncioCreate",
+    "PrestadorCreate",
+    "ChatResponse",
+    "ServicoResponse",
+    "UserProfileResponse",
+    "PropostaResponse",
+    "StandardResponse",
+    "ListResponse",
+    "ServicoFilter",
+    "Pagination"
+]

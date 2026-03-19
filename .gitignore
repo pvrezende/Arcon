@@ -1,0 +1,106 @@
+# =========================
+# DEPENDENCIES
+# =========================
+node_modules/
+
+# =========================
+# EXPO / REACT NATIVE
+# =========================
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# =========================
+# NATIVE (ANDROID / IOS)
+# =========================
+/ios
+/android
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# =========================
+# METRO
+# =========================
+.metro-health-check*
+
+# =========================
+# LOGS / DEBUG
+# =========================
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+logs/
+*.log
+
+# =========================
+# MAC / SYSTEM FILES
+# =========================
+.DS_Store
+Thumbs.db
+*.pem
+
+# =========================
+# ENV FILES (CRITICAL 🔒)
+# =========================
+.env
+.env.*
+.env*.local
+backend/.env
+backend/pagamentos/.env
+
+# =========================
+# TYPESCRIPT
+# =========================
+*.tsbuildinfo
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env_venv/
+.venv/
+
+# =========================
+# BACKEND CACHE
+# =========================
+backend/__pycache__/
+backend/**/__pycache__/
+
+# =========================
+# DATABASE / LOCAL FILES
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# IDE / EDITORS
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# BUILD FILES
+# =========================
+build/
+coverage/
+
+# =========================
+# MISC
+# =========================
+*.lock

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Transparente - Mercado Pago</title>
+   <style>
+    /* Adicione ao style.css */
+.debug-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.debug-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.debug-btn {
+    padding: 8px 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.debug-btn:hover {
+    background: #5a6fd8;
+}
+
+.payment-status {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+   </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 Checkout Transparente</h1>
+        
+        <div class="product-info">
+            <h3>🎮 PlayStation 5</h3>
+            <p><strong>Preço:</strong> R$ 499,00</p>
+            <p><strong>Descrição:</strong> Console PlayStation 5 Edition</p>
+        </div>
+
+        <form id="payment-form">
+            <div class="form-section">
+                <h3>Dados do Cartão</h3>
+                
+                <div class="form-group">
+                    <label for="cardNumber">Número do Cartão:</label>
+                    <input type="text" id="cardNumber" placeholder="4111 1111 1111 1111" maxlength="19" required>
+                    <div id="card-brand" class="card-brand"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardHolder">Nome no Cartão:</label>
+                    <input type="text" id="cardHolder" placeholder="João Silva" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expirationDate">Validade:</label>
+                        <input type="text" id="expirationDate" placeholder="12/2030" maxlength="7" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="securityCode">CVV:</label>
+                        <input type="text" id="securityCode" placeholder="123" maxlength="4" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Dados Pessoais</h3>
+                
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf">CPF:</label>
+                    <input type="text" id="cpf" placeholder="123.456.789-09" maxlength="14" required>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Parcelamento</h3>
+                
+                <div class="form-group">
+                    <label for="installments">Parcelas:</label>
+                    <select id="installments" required>
+                        <option value="">Digite o número do cartão primeiro</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submit-btn">
+                💳 Finalizar Pagamento - R$ 499,00
+            </button>
+        </form>
+
+        <div id="result" class="result"></div>
+
+        <div id="loading" class="loading" style="display: none;">
+            Processando pagamento...
+        </div>
+
+        <!-- Debug -->
+        <div style="margin: 20px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 12px;">
+            <strong>Debug:</strong>
+            <button onclick="testWithVisa()" style="margin: 2px; padding: 5px;">Testar Visa</button>
+            <button onclick="testWithMastercard()" style="margin: 2px; padding: 5px;">Testar Mastercard</button>
+            <button onclick="clearForm()" style="margin: 2px; padding: 5px;">Limpar</button>
+        </div>
+    </div>
+
+    <!-- SDK do Mercado Pago -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script>
+        const mp = new MercadoPago('{{ public_key }}', {
+            locale: 'pt-BR'
+        });
+
+        let currentPaymentMethod = 'visa';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeForm();
+        });
+
+        function initializeForm() {
+            setupMasks();
+            
+            // Detectar mudanças no cartão
+            document.getElementById('cardNumber').addEventListener('input', function() {
+                const cardNumber = this.value.replace(/\s/g, '');
+                
+                // Detectar bandeira simples
+                detectCardBrandSimple(cardNumber);
+                
+                // Buscar parcelas quando tiver 6+ dígitos
+                if (cardNumber.length >= 6) {
+                    clearTimeout(window.installmentsTimeout);
+                    window.installmentsTimeout = setTimeout(() => {
+                        updateInstallments();
+                    }, 800);
+                }
+            });
+            
+            // Submeter formulário
+            document.getElementById('payment-form').addEventListener('submit', processPayment);
+        }
+
+        function setupMasks() {
+            // Máscara do número do cartão
+            document.getElementById('cardNumber').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '')
+                    .replace(/(\d{4})(?=\d)/g, '$1 ')
+                    .substring(0, 19);
+            });
+
+            // Máscara da validade
+            document.getElementById('expirationDate').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '')
+                    .replace(/(\d{2})(?=\d)/, '$1/')
+                    .substring(0, 7);
+            });
+
+            // Máscara do CVV
+            document.getElementById('securityCode').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+            });
+
+            // Máscara do CPF
+            document.getElementById('cpf').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+                    .substring(0, 14);
+            });
+        }
+
+        function detectCardBrandSimple(cardNumber) {
+            const brandDiv = document.getElementById('card-brand');
+            
+            if (cardNumber.startsWith('4')) {
+                brandDiv.textContent = 'Visa';
+                currentPaymentMethod = 'visa';
+            } else if (cardNumber.startsWith('5')) {
+                brandDiv.textContent = 'Mastercard';
+                currentPaymentMethod = 'master';
+            } else if (cardNumber.startsWith('3')) {
+                brandDiv.textContent = 'American Express';
+                currentPaymentMethod = 'amex';
+            } else {
+                brandDiv.textContent = '';
+                currentPaymentMethod = 'visa';
+            }
+            
+            if (brandDiv.textContent) {
+                brandDiv.className = 'card-brand visible';
+            } else {
+                brandDiv.className = 'card-brand';
+            }
+        }
+
+        async function updateInstallments() {
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const amount = 499.00;
+            
+            if (cardNumber.length >= 6) {
+                console.log(`🔄 Buscando parcelas para: ${cardNumber.substring(0, 6)}`);
+                
+                try {
+                    const installmentsSelect = document.getElementById('installments');
+                    installmentsSelect.innerHTML = '<option value="">Buscando parcelas...</option>';
+                    
+                    const response = await fetch('/get_installments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            card_number: cardNumber,
+                            amount: amount
+                        })
+                    });
+
+                    const data = await response.json();
+                    console.log('📦 Resposta das parcelas:', data);
+                    
+                    installmentsSelect.innerHTML = '';
+                    
+                    if (data.success && data.installments && data.installments.length > 0) {
+                        const paymentMethod = data.installments[0];
+                        
+                        if (paymentMethod.payer_costs && paymentMethod.payer_costs.length > 0) {
+                            console.log(`✅ ${paymentMethod.payer_costs.length} opções encontradas`);
+                            
+                            paymentMethod.payer_costs.forEach(installment => {
+                                const option = document.createElement('option');
+                                option.value = installment.installments;
+                                
+                                let text = '';
+                                if (installment.installments === 1) {
+                                    text = `À vista - R$ ${installment.total_amount.toFixed(2)}`;
+                                } else {
+                                    text = `${installment.installments}x de R$ ${installment.installment_amount.toFixed(2)}`;
+                                    
+                                    if (installment.installment_rate === 0) {
+                                        text += ' (sem juros)';
+                                    } else {
+                                        text += ` (Total: R$ ${installment.total_amount.toFixed(2)})`;
+                                    }
+                                }
+                                
+                                option.textContent = text;
+                                installmentsSelect.appendChild(option);
+                            });
+                        } else {
+                            createFallbackInstallments();
+                        }
+                    } else {
+                        createFallbackInstallments();
+                    }
+                    
+                } catch (error) {
+                    console.error('💥 Erro ao buscar parcelas:', error);
+                    createFallbackInstallments();
+                }
+            }
+        }
+
+        function createFallbackInstallments() {
+            console.log('🔄 Usando parcelas de fallback');
+            const installmentsSelect = document.getElementById('installments');
+            installmentsSelect.innerHTML = '';
+            
+            const installments = [
+                { value: 1, text: 'À vista - R$ 499,00' },
+                { value: 2, text: '2x de R$ 249,50 sem juros' },
+                { value: 3, text: '3x de R$ 166,33 sem juros' },
+                { value: 4, text: '4x de R$ 124,75 sem juros' },
+                { value: 5, text: '5x de R$ 99,80 sem juros' },
+                { value: 6, text: '6x de R$ 83,17 sem juros' },
+                { value: 7, text: '7x de R$ 78,14 com juros' },
+                { value: 8, text: '8x de R$ 69,50 com juros' },
+                { value: 9, text: '9x de R$ 62,38 com juros' },
+                { value: 10, text: '10x de R$ 56,89 com juros' },
+                { value: 11, text: '11x de R$ 52,36 com juros' },
+                { value: 12, text: '12x de R$ 48,58 com juros' }
+            ];
+            
+            installments.forEach(option => {
+                const optElement = document.createElement('option');
+                optElement.value = option.value;
+                optElement.textContent = option.text;
+                installmentsSelect.appendChild(optElement);
+            });
+        }
+
+        async function processPayment(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const loading = document.getElementById('loading');
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            hideResult();
+
+            try {
+                const formData = getFormData();
+                
+                console.log('🔄 Criando token do cartão...');
+                
+                // Criar token do cartão
+                const tokenResult = await mp.createCardToken({
+                    cardNumber: formData.cardNumber.replace(/\s/g, ''),
+                    cardholderName: formData.cardHolder,
+                    cardExpirationMonth: formData.expirationDate.split('/')[0],
+                    cardExpirationYear: formData.expirationDate.split('/')[1],
+                    securityCode: formData.securityCode
+                });
+
+                if (tokenResult.error) {
+                    throw new Error(tokenResult.error.message);
+                }
+
+                console.log('✅ Token criado, processando pagamento...');
+                
+                // Processar pagamento
+                const response = await fetch('/process_payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: tokenResult.id,
+                        transaction_amount: 499.00,
+                        installments: parseInt(formData.installments),
+                        payment_method_id: currentPaymentMethod,
+                        email: formData.email,
+                        cpf: formData.cpf
+                    })
+                });
+
+                const paymentResult = await response.json();
+                console.log('💰 Resultado do pagamento:', paymentResult);
+
+                if (paymentResult.error) {
+                    throw new Error(paymentResult.error);
+                }
+
+                if (paymentResult.status === 'approved') {
+                    showResult(`✅ Pagamento aprovado! ID: ${paymentResult.id}`, 'success');
+                } else if (paymentResult.status === 'pending') {
+                    const detail = paymentResult.status_detail || 'Aguardando confirmação';
+                    showResult(`⏳ Pagamento pendente: ${detail}`, 'warning');
+                } else {
+                    const detail = paymentResult.status_detail || 'Motivo desconhecido';
+                    showResult(`❌ Pagamento recusado: ${detail}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('💥 Erro no pagamento:', error);
+                showResult(`❌ Erro: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function getFormData() {
+            return {
+                cardNumber: document.getElementById('cardNumber').value,
+                cardHolder: document.getElementById('cardHolder').value,
+                expirationDate: document.getElementById('expirationDate').value,
+                securityCode: document.getElementById('securityCode').value,
+                email: document.getElementById('email').value,
+                cpf: document.getElementById('cpf').value,
+                installments: document.getElementById('installments').value
+            };
+        }
+
+        function validateForm() {
+            const formData = getFormData();
+            
+            for (const [key, value] of Object.entries(formData)) {
+                if (!value) {
+                    showResult(`Por favor, preencha o campo: ${key}`, 'error');
+                    return false;
+                }
+            }
+            
+            const cardNumber = formData.cardNumber.replace(/\s/g, '');
+            if (cardNumber.length < 16) {
+                showResult('Número do cartão inválido', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideResult() {
+            document.getElementById('result').style.display = 'none';
+        }
+
+        // Funções de debug
+        function testWithVisa() {
+            document.getElementById('cardNumber').value = '4111 1111 1111 1111';
+            document.getElementById('cardHolder').value = 'João Silva';
+            document.getElementById('expirationDate').value = '12/2030';
+            document.getElementById('securityCode').value = '123';
+            document.getElementById('email').value = 'teste@teste.com';
+            document.getElementById('cpf').value = '123.456.789-09';
+            detectCardBrandSimple('4111111111111111');
+            updateInstallments();
+        }
+
+        function testWithMastercard() {
+            document.getElementById('cardNumber').value = '5555 5555 5555 4444';
+            document.getElementById('cardHolder').value = 'Maria Santos';
+            document.getElementById('expirationDate').value = '12/2030';
+            document.getElementById('securityCode').value = '123';
+            document.getElementById('email').value = 'teste@teste.com';
+            document.getElementById('cpf').value = '123.456.789-09';
+            detectCardBrandSimple('5555555555554444');
+            updateInstallments();
+        }
+
+        function clearForm() {
+            document.getElementById('payment-form').reset();
+            document.getElementById('card-brand').className = 'card-brand';
+            document.getElementById('installments').innerHTML = '<option value="">Digite o número do cartão primeiro</option>';
+            hideResult();
+        }
+    </script>
+</body>
+</html>
